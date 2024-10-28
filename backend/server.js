@@ -73,7 +73,6 @@ io.on('connection', (socket) => {
         socket.to(roomId).emit('stopTyping');
     });
 
-kjnjdkasnjdn
     socket.on('deleteRoom', (roomId) => {
         console.log(`Received deleteRoom event for room: ${roomId}`);
         if (messages[roomId]) {
