@@ -12,14 +12,14 @@ import { MessageSquare, ArrowUpIcon, User2Icon } from "lucide-react";
 import { IoIosArrowDown } from "react-icons/io";
 import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
-import chatgpt from '../src/assets/chatgpt.svg'
+import chatgpt from '../public/gptlogog.png'
 import copy from '../src/assets/copy.svg'
 import like from '../src/assets/like.svg'
 import dislike from '../src/assets/dislike.svg'
 import share from '../src/assets/share.svg'
 import newchat from '../src/assets/newchat.svg'
 
-const socket = io("https://chatgpttroll.onrender.com");
+const socket = io("http://localhost:4000/");
 
 socket.on("connect", () => {
   console.log("Connected to Socket.IO server:", socket.id);
@@ -188,7 +188,7 @@ const Chat = () => {
               >
                 {msg.role === 'responder' && (
                   <div className="rounded-full mr-2 border border-slate-200 p-1 sm:p-2 flex-shrink-0">
-                    <img src={chatgpt} alt="Responder Logo" className="h-3 w-3 sm:h-4 sm:w-4" />
+                    <img src={chatgpt} alt="Responder Logo" className="h-5 w-5 sm:h-4 sm:w-4" />
                   </div>
                 )}
                 <div
@@ -403,7 +403,7 @@ const App = () => {
             element={<Navigate to={`/user/${roomId}`} replace />}
           />
           <Route
-            path="/user/:roomId"
+            path="/user/:roomId"i
             element={<Chat />}
           />
           <Route
