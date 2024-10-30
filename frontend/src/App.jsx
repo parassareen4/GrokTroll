@@ -19,7 +19,7 @@ import dislike from '../src/assets/dislike.svg'
 import share from '../src/assets/share.svg'
 import newchat from '../src/assets/newchat.svg'
 
-const socket = io("https://chatgpttroll.onrender.com");
+const socket = io("https://groktroll.onrender.com");
 
 socket.on("connect", () => {
   console.log("Connected to Socket.IO server:", socket.id);
