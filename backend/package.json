@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js", 
-        "build": "echo 'No build step required for Node.js server'",
+    "start": "node server.js",
+    "build": "echo 'No build step required for Node.js server'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -16,6 +16,7 @@
     "express": "^4.21.1",
     "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.16",
     "socket.io": "^4.8.0",
     "uuid": "^10.0.0"
   }
