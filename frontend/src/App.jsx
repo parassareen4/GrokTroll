@@ -251,9 +251,7 @@ const Chat = () => {
           </button>
         </div>
       </form>
-      <div className="text-center p-2 text-xs sm:text-sm hidden sm:block text-gray-500">
-        ChatGPT can make mistakes. Check important info.
-      </div>
+      
     </div>
   );
 };
