@@ -8,18 +8,18 @@ import {
   useNavigate,
 } from "react-router-dom";
 import { io } from "socket.io-client";
-import { MessageSquare, ArrowUpIcon, User2Icon } from "lucide-react";
+import { MessageSquare, ArrowUpIcon, User2Icon, ArrowLeft } from "lucide-react";
 import { IoIosArrowDown } from "react-icons/io";
 import { motion, AnimatePresence } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
-import chatgpt from '../public/gptlogog.png'
+import responder from "../src/assets/responder.jpeg"
 import copy from '../src/assets/copy.svg'
 import like from '../src/assets/like.svg'
 import dislike from '../src/assets/dislike.svg'
 import share from '../src/assets/share.svg'
 import newchat from '../src/assets/newchat.svg'
 
-const socket = io("http://localhost:4000/");
+const socket = io("https://chatgpttroll.onrender.com");
 
 socket.on("connect", () => {
   console.log("Connected to Socket.IO server:", socket.id);
@@ -145,18 +145,18 @@ const Chat = () => {
     <div className="flex flex-col h-screen bg-white text-gray-800">
       <header className="flex justify-between items-center p-2 sm:p-4 border-b border-gray-200">
         <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex gap-1 items-center">
+          <span className="font-semibold text-lg sm:text-xl text-zinc-700"><ArrowLeft/></span>
+          </div>
           <button
             onClick={createNewChat}
             className="p-1 sm:p-2 rounded-md hover:bg-gray-100"
           >
             <img src={newchat} alt="New Chat" className="h-4 w-4 sm:h-6 sm:w-6" />
           </button>
-          <div className="flex gap-1 items-center">
-          <span className="font-semibold text-lg sm:text-xl text-zinc-700">ChatGPT 4o</span>
-          <IoIosArrowDown />
-          </div>
+
         </div>
-        <h1 className="text-lg sm:text-xl font-semibold hidden sm:block">New chat</h1>
+        <h1 className="text-lg sm:text-xl font-semibold hidden sm:flex gap-2 items-center">Grok 3 <span className="px-1 py-0 text-sm rounded-sm bg-sky-200 text-sky-600">beta</span></h1>
         <div className="flex items-center gap-2 sm:gap-6">
           <motion.button
             whileTap={{ scale: 0.9 }}
@@ -187,8 +187,8 @@ const Chat = () => {
                 }`}
               >
                 {msg.role === 'responder' && (
-                  <div className="rounded-full mr-2 border border-slate-200 p-1 sm:p-2 flex-shrink-0">
-                    <img src={chatgpt} alt="Responder Logo" className="h-5 w-5 sm:h-4 sm:w-4" />
+                  <div className="rounded-full mr-2 h-6 w-6 border border-slate-200  flex-shrink-0">
+                    <img src={responder} alt="Responder Logo" className=" object-cover rounded-full h-6 w-6" />
                   </div>
                 )}
                 <div
@@ -240,7 +240,7 @@ const Chat = () => {
             type="text"
             value={message}
             onChange={handleInputChange}
-            placeholder="Message ChatGPT"
+            placeholder="Message Grok"
             className="flex-1 py-2 sm:py-3 px-3 sm:px-5 rounded-[33px] bg-[#f4f4f4] focus-within:outline-none placeholder:text-slate-600 text-sm sm:text-base"
           />
           <button
@@ -403,7 +403,7 @@ const App = () => {
             element={<Navigate to={`/user/${roomId}`} replace />}
           />
           <Route
-            path="/user/:roomId"i
+            path="/user/:roomId"
             element={<Chat />}
           />
           <Route
