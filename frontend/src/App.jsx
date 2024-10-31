@@ -19,7 +19,7 @@ import dislike from '../src/assets/dislike.svg'
 import share from '../src/assets/share.svg'
 import newchat from '../src/assets/newchat.svg'
 
-const socket = io("https://groktroll.onrender.com");
+const socket = io("https://chatgpttroll.onrender.com");
 
 socket.on("connect", () => {
   console.log("Connected to Socket.IO server:", socket.id);
@@ -115,6 +115,7 @@ const Chat = () => {
   const handleInputChange = (e) => {
     setMessage(e.target.value);
     socket.emit("typing", { roomId });
+    autoResize(e.target);
   };
 
   const shareChat = () => {
@@ -141,121 +142,133 @@ const Chat = () => {
     });
   };
 
-  return (
-    <div className="flex flex-col h-screen bg-white text-gray-800">
-      <header className="flex justify-between items-center p-2 sm:p-4 border-b border-gray-200">
-        <div className="flex items-center gap-1 sm:gap-2">
-        <div className="flex gap-1 items-center">
-          <span className="font-semibold text-lg sm:text-xl text-zinc-700"><ArrowLeft/></span>
-          </div>
-          <button
-            onClick={createNewChat}
-            className="p-1 sm:p-2 rounded-md hover:bg-gray-100"
-          >
-            <img src={newchat} alt="New Chat" className="h-4 w-4 sm:h-6 sm:w-6" />
-          </button>
+  const autoResize = (textarea) => {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
 
-        </div>
-        <h1 className="text-lg sm:text-xl font-semibold hidden sm:flex gap-2 items-center">Grok 3 <span className="px-1 py-0 text-sm rounded-sm bg-sky-200 text-sky-600">beta</span></h1>
-        <div className="flex items-center gap-2 sm:gap-6">
-          <motion.button
-            whileTap={{ scale: 0.9 }}
-            className="share-button p-1 sm:p-2 bg-white text-black rounded-3xl px-2 sm:px-4 border border-gray-300 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
-            onClick={shareChat}
+  return (
+<div className="flex flex-col h-screen bg-white text-gray-800">
+  <header className="flex justify-between items-center p-2 sm:p-4 border-b border-gray-200">
+    <div className="flex items-center gap-1 sm:gap-2">
+      <div className="flex gap-1 items-center">
+        <span className="font-semibold text-lg sm:text-xl text-zinc-700"><ArrowLeft/></span>
+      </div>
+      <button
+        onClick={createNewChat}
+        className="p-1 sm:p-2 rounded-md hover:bg-gray-100"
+      >
+        <img src={newchat} alt="New Chat" className="h-4 w-4 sm:h-6 sm:w-6" />
+      </button>
+    </div>
+    <h1 className="text-lg sm:text-xl font-semibold hidden sm:flex gap-2 items-center">Grok 3 <span className="px-1 py-0 text-sm rounded-sm bg-sky-200 text-sky-600">beta</span></h1>
+    <div className="flex items-center gap-2 sm:gap-6">
+      <motion.button
+        whileTap={{ scale: 0.9 }}
+        className="share-button p-1 sm:p-2 bg-white text-black rounded-3xl px-2 sm:px-4 border border-gray-300 flex items-center gap-1 sm:gap-2 text-xs sm:text-sm"
+        onClick={shareChat}
+      >
+        <img src={share} alt="share" className="h-3 sm:h-5" /> <span className="hidden sm:inline">Share</span>
+      </motion.button>
+      <div className="p-1 sm:p-2 rounded-full bg-slate-200 group cursor-pointer"><User2Icon className="w-4 h-4 sm:w-6 sm:h-6" /></div>
+    </div>
+  </header>
+  <main className="w-full sm:w-11/12 md:w-10/12 lg:w-9/12 mx-auto flex-1 overflow-auto p-2 sm:p-4 space-y-4 sm:space-y-6 mt-6 hide-scrollbar scroll-smooth">
+    <AnimatePresence>
+      {chat.map((msg, idx) => {
+        const isLastResponderMessage =
+          msg.role === "responder" &&
+          (idx === chat.length - 1);
+        
+        return (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className={`flex items-start relative ${
+              msg.role === "responder" ? "justify-start" : "justify-end"
+            }`}
           >
-            <img src={share} alt="share" className="h-3 sm:h-5" /> <span className="hidden sm:inline">Share</span>
-          </motion.button>
-          <div className="p-1 sm:p-2 rounded-full bg-slate-200 group cursor-pointer"><User2Icon className="w-4 h-4 sm:w-6 sm:h-6" /></div>
-        </div>
-      </header>
-      <main className="w-full sm:w-11/12 md:w-10/12 lg:w-9/12 mx-auto flex-1 overflow-auto p-2 sm:p-4 space-y-4 sm:space-y-6 mt-6 hide-scrollbar scroll-smooth">
-        <AnimatePresence>
-          {chat.map((msg, idx) => {
-            const isLastResponderMessage =
-              msg.role === "responder" &&
-              (idx === chat.length - 1);
-            
-            return (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.3 }}
-                className={`flex items-start relative ${
-                  msg.role === "responder" ? "justify-start" : "justify-end"
-                }`}
-              >
-                {msg.role === 'responder' && (
-                  <div className="rounded-full mr-2 h-6 w-6 border border-slate-200  flex-shrink-0">
-                    <img src={responder} alt="Responder Logo" className=" object-cover rounded-full h-6 w-6" />
-                  </div>
-                )}
-                <div
-                  className={`${
-                    msg.role === "responder" ? "responder-bubble" : "asker-bubble"
-                  } max-w-[85%] sm:max-w-[70%] rounded-2xl sm:rounded-3xl px-3 py-2 sm:px-5 sm:py-2.5 text-sm sm:text-base ${
-                    msg.role === "responder" ? "text-left" : "text-right"
-                  } ${msg.role === 'asker' ? 'bg-[#f4f4f4]' : 'bg-white'}`}
-                >
-                  {msg.message}
-                </div>
-                {isLastResponderMessage && (
-                  <div className="flex space-x-1 mt-1 sm:mt-2 absolute left-8 sm:left-12 top-full">
-                    <div className="p-1 sm:p-2 cursor-pointer hover:bg-gray-100 rounded-full">
-                      <img src={copy} alt="Copy" className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </div>
-                    <div className="p-1 sm:p-2 cursor-pointer hover:bg-gray-100 rounded-full">
-                      <img src={like} alt="Like" className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </div>
-                    <div className="p-1 sm:p-2 cursor-pointer hover:bg-gray-100 rounded-full">
-                      <img src={dislike} alt="Dislike" className="h-3 w-3 sm:h-4 sm:w-4" />
-                    </div>
-                  </div>
-                )}
-              </motion.div>
-            )
-          })}
-          {isTyping && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.3 }}
-              className={`flex ${window.location.pathname.includes('/chat/') ? "justify-end" : "justify-start"}`}
+            {msg.role === 'responder' && (
+              <div className="rounded-full mr-2 h-6 w-6 border border-slate-200  flex-shrink-0">
+                <img src={responder} alt="Responder Logo" className=" object-cover rounded-full h-6 w-6" />
+              </div>
+            )}
+            <div
+              className={`${
+                msg.role === "responder" ? "responder-bubble" : "asker-bubble"
+              } max-w-[85%] sm:max-w-[70%] rounded-2xl sm:rounded-3xl px-3 py-2 sm:px-5 sm:py-2.5 text-sm sm:text-base ${
+                msg.role === "responder" ? "text-left" : "text-right"
+              } ${msg.role === 'asker' ? 'bg-[#f4f4f4]' : 'bg-white'}`}
             >
-              <div className="max-w-3/4 p-2 sm:p-3 rounded-lg bg-gray-100 text-gray-800 mt-2 sm:mt-3">
-                <div className="flex items-center space-x-1 sm:space-x-2">
-                  <div className="typing-dot bg-gray-400 rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce"></div>
-                  <div className="typing-dot bg-gray-400 rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce delay-100"></div>
-                  <div className="typing-dot bg-gray-400 rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce delay-200"></div>
+              {msg.message}
+            </div>
+            {isLastResponderMessage && (
+              <div className="flex space-x-1 mt-1 sm:mt-2 absolute left-8 sm:left-12 top-full">
+                <div className="p-1 sm:p-2 cursor-pointer hover:bg-gray-100 rounded-full">
+                  <img src={copy} alt="Copy" className="h-3 w-3 sm:h-4 sm:w-4" />
+                </div>
+                <div className="p-1 sm:p-2 cursor-pointer hover:bg-gray-100 rounded-full">
+                  <img src={like} alt="Like" className="h-3 w-3 sm:h-4 sm:w-4" />
+                </div>
+                <div className="p-1 sm:p-2 cursor-pointer hover:bg-gray-100 rounded-full">
+                  <img src={dislike} alt="Dislike" className="h-3 w-3 sm:h-4 sm:w-4" />
                 </div>
               </div>
-            </motion.div>
-          )}
-          <div ref={chatEndRef}></div>
-        </AnimatePresence>
-      </main>
-      
-      <form onSubmit={sendMessage} className="p-2 sm:p-4">
-        <div className="flex items-center w-full sm:w-10/12 md:w-9/12 lg:w-7/12 mx-auto space-x-2 py-1 rounded-[33px] bg-[#f4f4f4] relative">
-          <input
-            type="text"
-            value={message}
-            onChange={handleInputChange}
-            placeholder="Message Grok"
-            className="flex-1 py-2 sm:py-3 px-3 sm:px-5 rounded-[33px] bg-[#f4f4f4] focus-within:outline-none placeholder:text-slate-600 text-sm sm:text-base"
-          />
-          <button
-            type="submit"
-            className="p-1.5 sm:p-2 rounded-full absolute right-1 sm:right-2 bg-black text-white hover:bg-opacity-75"
-          >
-            <ArrowUpIcon size={18} className="sm:w-5 sm:h-5" fontWeight={900} />
-          </button>
-        </div>
-      </form>
-      
+            )}
+          </motion.div>
+        )
+      })}
+      {isTyping && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className={`flex ${window.location.pathname.includes('/chat/') ? "justify-end" : "justify-start"}`}
+        >
+          <div className="max-w-3/4 p-2 sm:p-3 rounded-lg bg-gray-100 text-gray-800 mt-2 sm:mt-3">
+            <div className="flex items-center space-x-1 sm:space-x-2">
+              <div className="typing-dot bg-gray-400 rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce"></div>
+              <div className="typing-dot bg-gray-400 rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce delay-100"></div>
+              <div className="typing-dot bg-gray-400 rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce delay-200"></div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+      <div ref={chatEndRef}></div>
+    </AnimatePresence>
+  </main>
+  
+  <form onSubmit={sendMessage} className="p-2 sm:p-4">
+    <div className="flex items-center w-full sm:w-10/12 md:w-9/12 lg:w-7/12 mx-auto space-x-2 py-1 rounded-[33px] bg-[#f4f4f4] relative pr-2">
+      <textarea
+        value={message}
+        onChange={handleInputChange}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage(e);
+          }
+        }}
+        placeholder="Message Grok"
+        className="flex-1 py-2 sm:py-3 px-3 sm:px-5 rounded-[33px] bg-[#f4f4f4] focus-within:outline-none placeholder:text-slate-600 text-sm sm:text-base resize-none overflow-hidden"
+        rows="1"
+      />
+      <button
+        type="submit"
+        className="p-1.5 sm:p-2 rounded-full bg-black text-white hover:bg-opacity-75"
+      >
+        <ArrowUpIcon size={18} className="sm:w-5 sm:h-5" fontWeight={900} />
+      </button>
     </div>
+  </form>
+  <div className="text-center p-2 text-xs sm:text-sm hidden sm:block text-gray-500">
+    ChatGPT can make mistakes. Check important info.
+  </div>
+</div>
   );
 };
 
